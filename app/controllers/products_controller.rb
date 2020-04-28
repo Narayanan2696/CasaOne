@@ -1,9 +1,9 @@
 class ProductsController < ApplicationController
 
-	def create
-		@product ||= Product.create!(product_params)
-		render json: @product, status: :created
-	end
+	# def create
+	# 	@product ||= Product.create!(product_params)
+	# 	render json: @product, status: :created
+	# end
 
 	def index
 		render json: products
@@ -14,12 +14,17 @@ class ProductsController < ApplicationController
 	end
 
 	private
-		def product
-			@product ||= Product.find(params[:id])
+
+		def customer
+			@customer ||= Customer.find(params[:customer_id])
 		end
 
+		def product
+			@product ||= customer.products.find(params[:id])
+		end
+		
 		def products
-			@products ||= Product.all
+			@products ||= customer.products
 		end
 
 		def product_params
