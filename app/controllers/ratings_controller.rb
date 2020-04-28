@@ -1,12 +1,15 @@
 class RatingsController < ApplicationController
 
 	def create
-		@rating ||= create_rating()
-		render json: @rating
+		render json: create_rating
+	end
+
+	def manual_rating
+		render json: product.ratings.create!(rating_params)
 	end
 
 	def index
-
+		render json: ratings
 	end
 
 	def show
@@ -14,12 +17,14 @@ class RatingsController < ApplicationController
 	end
 
 	private
+
 		def product
 			@product ||= Product.find(params[:product_id])
 		end
 
 		def create_rating
-			@create_rating ||= product.ratings.create!(rating_params)
+			stars = product.questions.map{|question| question.answers.find_by_customer_id(params[:customer_id]).rating}
+			Rating.create!(customer_id: params[:customer_id], product_id: params[:product_id], rate: (stars.sum/stars.count).round(2))
 		end
 
 		def ratings
